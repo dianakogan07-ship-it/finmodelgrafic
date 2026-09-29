@@ -1,6 +1,0 @@
-{
-  "buildCommand": "",
-  "outputDirectory": "prototype",
-  "cleanUrls": true,
-  "rewrites": [{ "source": "/", "destination": "/suz-prototype.html" }]
-}

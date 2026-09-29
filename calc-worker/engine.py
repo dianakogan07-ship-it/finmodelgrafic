@@ -3,11 +3,25 @@
 Книга загружается один раз; перед расчётом в памяти правятся формулы,
 которые Aspose считает не так, как русский Excel. Файл модели не меняется.
 """
+import glob
 import os
 import re
 
-# .NET внутри Aspose не находит ICU сам; без ICU кириллица сравнивается с учётом регистра
-os.environ.setdefault("CLR_ICU_VERSION_OVERRIDE", "74.2")
+
+def _icu_override():
+    # .NET внутри Aspose не находит системный ICU сам; без ICU кириллица сравнивается с учётом регистра
+    if os.environ.get("CLR_ICU_VERSION_OVERRIDE") or os.environ.get("DOTNET_SYSTEM_GLOBALIZATION_INVARIANT"):
+        return
+    versions = sorted(
+        int(m.group(1))
+        for p in glob.glob("/usr/lib/*/libicuuc.so.*") + glob.glob("/usr/lib/libicuuc.so.*")
+        if (m := re.search(r"libicuuc\.so\.(\d+)$", p))
+    )
+    if versions:
+        os.environ["CLR_ICU_VERSION_OVERRIDE"] = str(versions[-1])
+
+
+_icu_override()
 
 import aspose.cells as ac  # noqa: E402
 

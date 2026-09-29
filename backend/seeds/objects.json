@@ -1,0 +1,11 @@
+[
+  {"slug": "sokolniki-0909", "name": "Сокольники 09 09 new FM", "title": "СОКОЛЬНИКИ 09 09 NEW FM В РЫНКЕ", "style": "ours", "angle": 0, "has_dashboard": true},
+  {"slug": "paveletsky", "name": "Павелецкий", "style": "grey", "angle": 40},
+  {"slug": "ryazansky", "name": "Рязанский", "angle": 80},
+  {"slug": "rizhsky", "name": "Рижский", "angle": 130},
+  {"slug": "kursky", "name": "Курский", "angle": 160},
+  {"slug": "savelovsky", "name": "Савеловский", "angle": 200},
+  {"slug": "kievsky", "name": "Киевский", "angle": 230},
+  {"slug": "sokolniki", "name": "Сокольники", "style": "partner2", "angle": 280, "tag": "в партнерстве"},
+  {"slug": "belorussky", "name": "Белорусский", "style": "partner1", "angle": 320, "tag": "в партнерстве"}
+]

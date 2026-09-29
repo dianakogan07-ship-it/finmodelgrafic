@@ -1,5 +1,11 @@
-*.xlsx
+*.db
 *.xlsm
+*.xlsx
 .env
 __pycache__/
+data/
+frontend/dist/
+frontend/node_modules/
+frontend/playwright-report/
+frontend/test-results/
 node_modules/

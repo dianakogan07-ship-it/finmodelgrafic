@@ -1,0 +1,33 @@
+# Адреса ячеек и правила поиска строк финмодели.
+# Новая версия модели с тем же устройством листов не требует правки кода — только этого файла.
+
+outputs:
+  fr:
+    sheet: Dashboard_2
+    cell: G69
+    label_cell: C69
+    label: Финансовый результат проекта
+  llcr:
+    sheet: Dashboard_2
+    cell: E81
+    label_cell: C81
+    label: LLCR
+
+sales:
+  sheet: Продажи
+  periods_row: 2          # подписи кварталов «1кв. 26»
+  first_col: P            # первый квартал модели
+  queue_col: C            # номер очереди
+  param_col: D            # параметр
+  type_col: E             # тип помещений
+  total_col: N            # итог площади по строке «Продано»
+  type: Квартиры
+  price_param: Цена продажи с индексацией
+  area_param: Продано
+  price_divisor: 1000     # руб./м² → тыс. руб./м²
+  scan_rows: 600
+  # контрольные адреса: если поиск нашёл другие строки — предупреждение
+  expected_rows:
+    1: {price: 12, area: 15}
+    2: {price: 58, area: 61}
+    3: {price: 104, area: 107}

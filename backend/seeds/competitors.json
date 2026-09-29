@@ -1,0 +1,658 @@
+{
+ "_note": "ДЕМО-данные: III кв. 26 – II кв. 27 сняты со скриншота сайта, остальное — экстраполяция. Заменить выгрузкой из раздела «Проекты конкурентов».",
+ "project": "sokolniki-0909",
+ "competitors": [
+  {
+   "key": "intel",
+   "name": "Интеллигент",
+   "color": "#c2410c",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 524,
+     "pace": 0.3
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 534,
+     "pace": 0.3
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 545,
+     "pace": 0.3
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 555,
+     "pace": 1.4
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 578,
+     "pace": 1.1
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 590,
+     "pace": 1.3
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 603,
+     "pace": 1.2
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 616,
+     "pace": 1.15
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 630,
+     "pace": 1.17
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 644,
+     "pace": 1.2
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 658,
+     "pace": 1.18
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 672,
+     "pace": 1.11
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 687,
+     "pace": 1.02
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 702,
+     "pace": 0.96
+    }
+   ]
+  },
+  {
+   "key": "dom56",
+   "name": "Дом 56",
+   "color": "#c98bf0",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 688,
+     "pace": 0.5
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 702,
+     "pace": 0.5
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 716,
+     "pace": 0.5
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 752,
+     "pace": 1.4
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 775,
+     "pace": 1.1
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 806,
+     "pace": 1.3
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 824,
+     "pace": 1.19
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 842,
+     "pace": 1.2
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 860,
+     "pace": 1.23
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 879,
+     "pace": 1.22
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 899,
+     "pace": 1.14
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 918,
+     "pace": 1.05
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 939,
+     "pace": 0.99
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 959,
+     "pace": 0.99
+    }
+   ]
+  },
+  {
+   "key": "sokolniki",
+   "name": "Sokolniki",
+   "color": "#3431f2",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 509,
+     "pace": 1.0
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 520,
+     "pace": 1.0
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 530,
+     "pace": 1.0
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 545,
+     "pace": 3.0
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 560,
+     "pace": 2.4
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 575,
+     "pace": 2.4
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 588,
+     "pace": 2.29
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 601,
+     "pace": 2.35
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 614,
+     "pace": 2.32
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 627,
+     "pace": 2.18
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 641,
+     "pace": 1.99
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 655,
+     "pace": 1.88
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 670,
+     "pace": 1.88
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 684,
+     "pace": 1.93
+    }
+   ]
+  },
+  {
+   "key": "level",
+   "name": "Level Бауманская",
+   "color": "#f0506e",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 577,
+     "pace": 0.3
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 588,
+     "pace": 0.3
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 600,
+     "pace": 0.3
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 615,
+     "pace": 0.4
+    }
+   ]
+  },
+  {
+   "key": "preo",
+   "name": "Преображенская площадь",
+   "color": "#f5c518",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 557,
+     "pace": 0.15
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 569,
+     "pace": 0.15
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 580,
+     "pace": 0.15
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 610,
+     "pace": 5.6
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 640,
+     "pace": 5.0
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 680,
+     "pace": 4.9
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 695,
+     "pace": 5.04
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 710,
+     "pace": 4.72
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 726,
+     "pace": 4.33
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 742,
+     "pace": 4.08
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 758,
+     "pace": 4.07
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 775,
+     "pace": 4.18
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 792,
+     "pace": 4.19
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 809,
+     "pace": 3.99
+    }
+   ]
+  },
+  {
+   "key": "stone",
+   "name": "STONE Rise",
+   "color": "#4fd6d0",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 553,
+     "pace": 0.5
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 564,
+     "pace": 0.5
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 575,
+     "pace": 0.5
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 590,
+     "pace": 2.7
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 600,
+     "pace": 2.4
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 610,
+     "pace": 2.6
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 623,
+     "pace": 2.58
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 637,
+     "pace": 2.37
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 651,
+     "pace": 2.23
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 665,
+     "pace": 2.23
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 680,
+     "pace": 2.29
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 695,
+     "pace": 2.29
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 710,
+     "pace": 2.18
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 726,
+     "pace": 2.0
+    }
+   ]
+  },
+  {
+   "key": "solos",
+   "name": "Solos",
+   "color": "#d12bc9",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 428,
+     "pace": 0.1
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 436,
+     "pace": 0.1
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 445,
+     "pace": 0.1
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 445,
+     "pace": 1.6
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 440,
+     "pace": 1.0
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 431,
+     "pace": 1.1
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 440,
+     "pace": 1.03
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 450,
+     "pace": 0.97
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 460,
+     "pace": 0.97
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 470,
+     "pace": 1.0
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 481,
+     "pace": 1.0
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 491,
+     "pace": 0.95
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 502,
+     "pace": 0.87
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 513,
+     "pace": 0.81
+    }
+   ]
+  },
+  {
+   "key": "sokolinn",
+   "name": "Sokolinn Park",
+   "color": "#22c55e",
+   "enabled_default": true,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 531,
+     "pace": 0.04
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 541,
+     "pace": 0.04
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 552,
+     "pace": 0.04
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 562,
+     "pace": 0.5
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 570,
+     "pace": 0.4
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 570,
+     "pace": 0.4
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 583,
+     "pace": 0.36
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 595,
+     "pace": 0.36
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 608,
+     "pace": 0.37
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 622,
+     "pace": 0.38
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 636,
+     "pace": 0.36
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 650,
+     "pace": 0.33
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 664,
+     "pace": 0.3
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 678,
+     "pace": 0.3
+    }
+   ]
+  },
+  {
+   "key": "ahead",
+   "name": "AHEAD",
+   "color": "#9aa3b5",
+   "enabled_default": false,
+   "series": [
+    {
+     "quarter": "1кв. 26",
+     "price": 663,
+     "pace": 0.8
+    },
+    {
+     "quarter": "2кв. 26",
+     "price": 676,
+     "pace": 0.8
+    },
+    {
+     "quarter": "3кв. 26",
+     "price": 690,
+     "pace": 0.8
+    },
+    {
+     "quarter": "4кв. 26",
+     "price": 700,
+     "pace": 1.2
+    },
+    {
+     "quarter": "1кв. 27",
+     "price": 720,
+     "pace": 1.5
+    },
+    {
+     "quarter": "2кв. 27",
+     "price": 745,
+     "pace": 1.6
+    },
+    {
+     "quarter": "3кв. 27",
+     "price": 761,
+     "pace": 1.5
+    },
+    {
+     "quarter": "4кв. 27",
+     "price": 778,
+     "pace": 1.54
+    },
+    {
+     "quarter": "1кв. 28",
+     "price": 795,
+     "pace": 1.55
+    },
+    {
+     "quarter": "2кв. 28",
+     "price": 813,
+     "pace": 1.47
+    },
+    {
+     "quarter": "3кв. 28",
+     "price": 831,
+     "pace": 1.35
+    },
+    {
+     "quarter": "4кв. 28",
+     "price": 849,
+     "pace": 1.26
+    },
+    {
+     "quarter": "1кв. 29",
+     "price": 868,
+     "pace": 1.23
+    },
+    {
+     "quarter": "2кв. 29",
+     "price": 887,
+     "pace": 1.27
+    }
+   ]
+  }
+ ]
+}
