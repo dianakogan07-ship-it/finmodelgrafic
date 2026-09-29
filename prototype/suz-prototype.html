@@ -1,0 +1,563 @@
+<title>Прототип СУЗ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Layout: копия интерфейса СУЗ — тёмный single-theme, сайдбар 330px + область графиков 4 квартала × 2 ряда */
+:root{
+  --bg:#141619; --bg2:#22262b; --panel:#23272d; --panel2:#2c3138; --line:#353b43;
+  --fg:#eceef1; --muted:#9aa1ab; --dim:#6c737d; --accent:#2f7de1; --danger:#ff4d4f; --ours:#ececec;
+  --font:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;margin:0}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,input:focus-visible,label:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.screen{min-height:100%}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- login ---------- */
+#login{display:grid;place-items:center;background:var(--bg2);padding:24px 16px}
+.login-card{width:min(360px,100%);display:grid;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px 24px}
+.login-card h1{font-size:20px;font-weight:600;margin:0 0 4px;letter-spacing:.02em}
+.login-card p{margin:0;color:var(--muted);font-size:13px}
+.field{display:grid;gap:6px}
+.field label{font-size:12px;color:var(--muted)}
+.field input{background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--fg);padding:10px 12px;font:inherit}
+.btn{background:var(--accent);color:#fff;border-radius:6px;padding:11px 14px;font-weight:600}
+.btn.ghost{background:var(--panel2);color:var(--fg);font-weight:500}
+
+/* ---------- monitoring ---------- */
+#monitor{background:var(--bg2);padding:0 16px 24px}
+.topnav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:22px 12px 0}
+.topnav button{color:var(--muted);font-size:15px;padding-bottom:6px;border-bottom:2px solid transparent}
+.topnav button.on{color:var(--fg);border-color:var(--accent)}
+.topnav .exit{margin-left:auto}
+.orbit{position:relative;width:min(760px,100%);aspect-ratio:1/1;margin:8px auto 0;max-width:100%}
+.orbit-center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:clamp(20px,4.4vw,38px);line-height:1.35;font-weight:500;pointer-events:none;letter-spacing:.01em}
+.node{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:6px;text-align:center;width:22%}
+.node .ball{width:min(112px,15vw);aspect-ratio:1;border-radius:50%;border:1.5px solid #2f6fb8;background:linear-gradient(160deg,#9aa1b1,#6f7890);transition:transform .15s}
+.node button{display:grid;justify-items:center;gap:6px}
+.node button:hover .ball{transform:scale(1.05)}
+.node .nm{font-size:clamp(11px,1.6vw,17px);color:#b9bec6}
+.node.active .nm{color:var(--fg)}
+.node .tag{font-size:clamp(10px,1.2vw,13px);color:var(--danger);margin-top:-6px}
+.ball.partner1{background:linear-gradient(170deg,#b24fc8,#8d1fb0)}
+.ball.partner2{background:linear-gradient(170deg,#b04bd8,#8a12d4)}
+.ball.ours{background:
+  linear-gradient(transparent 62%,rgba(20,10,5,.55) 62%),
+  linear-gradient(90deg,transparent 42%,#4b3d36 42%,#4b3d36 60%,transparent 60%),
+  linear-gradient(90deg,transparent 30%,#6a4b3c 30%,#6a4b3c 46%,transparent 46%),
+  linear-gradient(180deg,#27466e,#6d8db3 70%,#c79a6a)}
+.ball.grey{background:linear-gradient(160deg,#e5e5e5,#6d6d6d 55%,#2b2b2b)}
+
+/* ---------- dashboard ---------- */
+#dash{display:grid;grid-template-columns:330px minmax(0,1fr);gap:0;min-height:100%}
+.side{padding:18px 16px 24px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.back{color:#c9ced5;font-size:14px;display:inline-flex;gap:10px;align-items:center;margin:0 0 14px 8px}
+.card{background:var(--panel);border-radius:4px;padding:16px 14px}
+.ctrl{display:grid;gap:4px}
+.ctrl+.ctrl{margin-top:18px}
+.ctrl-head{display:flex;justify-content:space-between;align-items:baseline}
+.ctrl-head b{font-weight:500;font-size:16px}
+.ctrl-head small{color:var(--muted);font-size:15px;margin-left:6px}
+.ctrl-val{text-align:center;font-size:23px;font-weight:500}
+.ctrl-sub{text-align:center;color:var(--dim);font-size:11.5px;min-height:15px}
+.ctrl-row{display:grid;grid-template-columns:24px 1fr 24px;align-items:center;gap:10px}
+.pm{font-size:26px;line-height:1;color:#dfe3e8;height:28px}
+.pm:disabled{color:var(--dim);cursor:default}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--accent) var(--p,50%),#4a5058 var(--p,50%));cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#f4f5f7;border:0;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#f4f5f7;border:0}
+input[type=range]:disabled{opacity:.35;cursor:default}
+.reset{color:#dfe3e8;width:26px;height:26px;display:grid;place-items:center}
+.kpi{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:92px}
+.kpi .l{font-size:15.5px;line-height:1.3}
+.kpi .l small{display:block;color:var(--muted);font-size:15px}
+.kpi .v{font-size:28px;font-weight:500;text-align:right}
+.kpi .d{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+.kpi .d.up{color:#46c98a}.kpi .d.down{color:#ff7a6e}
+.proj-h{font-size:16px;font-weight:500;margin:16px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 6px;justify-content:center}
+.chip{border:2px solid var(--c);border-radius:999px;padding:4px 13px;font-size:12px;font-weight:600;display:inline-flex;gap:10px;align-items:center;white-space:nowrap}
+.chip.off{border-color:transparent;background:var(--panel2);color:#cfd3d8}
+.chip.ours{cursor:default}
+.assist{display:flex;gap:14px;align-items:center;margin-top:28px;padding-left:30px}
+.assist .btn{padding:7px 12px;font-size:14px}
+.src{margin-top:22px;border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px;font-size:12px;color:var(--muted)}
+.src strong{color:var(--fg);font-weight:600;font-size:12.5px}
+.src .row{display:flex;gap:8px;flex-wrap:wrap}
+.src code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--panel2);padding:1px 5px;border-radius:3px;color:#cfd3d8}
+.src .warn{color:#f0b35a}
+
+.main{padding:16px 24px 18px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.main-title{text-align:center;font-size:28px;font-weight:500;letter-spacing:.02em;margin:4px 0 18px;text-wrap:balance}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg button{padding:8px 20px;border-radius:3px;font-size:16px;color:#e6e9ed}
+.seg button.on{background:#3a3f46}
+.queues{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:16px}
+.queues button{min-width:28px;height:28px;padding:0 8px;border-radius:3px;color:#e6e9ed;font-size:16px}
+.queues button.on{background:#3a3f46}
+.charts{flex:1;overflow-x:auto;margin-top:6px}
+.charts-inner{min-width:880px;display:grid;grid-template-columns:28px 1fr;grid-template-rows:auto auto}
+.ylab{writing-mode:vertical-rl;transform:rotate(180deg);font-size:16px;color:#e6e9ed;text-align:center;white-space:nowrap}
+svg{display:block;width:100%;height:auto}
+.bnav{display:flex;justify-content:space-between;align-items:center;padding:10px 20px 0 28px;color:#dfe3e8;font-size:14.5px}
+.bnav div{display:flex;gap:18px;align-items:center}
+.bnav button:disabled{color:var(--dim);cursor:default}
+.empty{display:grid;place-items:center;min-height:420px;color:var(--muted);text-align:center;line-height:1.6}
+
+#tip{position:fixed;pointer-events:none;background:#0b0c0e;border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-size:12.5px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+#tip b{font-weight:600}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0b0c0e;border:1px solid var(--line);padding:10px 16px;border-radius:8px;font-size:13.5px;z-index:30;max-width:calc(100% - 32px)}
+.proto-note{font-size:11px;color:var(--dim);text-align:right;margin-top:8px}
+
+@media (max-width:900px){
+  #dash{grid-template-columns:1fr}
+  .main{padding:8px 16px 18px}
+  .main-title{font-size:20px}
+  .assist{padding-left:0;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!-- ===== Вход ===== -->
+<section id="login" class="screen">
+  <div class="login-card" id="loginForm">
+    <h1>СУЗ</h1>
+    <p>Прототип: вход не проверяется, нажмите «Войти».</p>
+    <div class="field"><label for="lg">Логин</label><input id="lg" value="suz-test2" autocomplete="off"></div>
+    <div class="field"><label for="pw">Пароль</label><input id="pw" type="password" value="prototype"></div>
+    <button class="btn" type="button" id="loginBtn">Войти</button>
+  </div>
+</section>
+
+<!-- ===== Мониторинг ===== -->
+<section id="monitor" class="screen" hidden>
+  <nav class="topnav">
+    <button data-soon>Учетные записи</button>
+    <button data-soon>Проекты конкурентов</button>
+    <button data-soon>Внутренние объекты</button>
+    <button class="on">Мониторинг</button>
+    <button class="exit" id="logout1" aria-label="Выйти">⇥</button>
+  </nav>
+  <div class="orbit" id="orbit"><div class="orbit-center">СПИСОК<br>ОБЪЕКТОВ</div></div>
+</section>
+
+<!-- ===== Дашборд ===== -->
+<section id="dash" class="screen" hidden>
+  <aside class="side">
+    <button class="back" id="back">‹ &nbsp;Назад</button>
+    <div class="card">
+      <div class="ctrl">
+        <div class="ctrl-head"><div><b>Цена 1 м²</b><small>тыс.руб.</small></div>
+          <button class="reset" id="reset" title="Сбросить к значениям модели" aria-label="Сбросить">↻</button></div>
+        <div class="ctrl-val tnum" id="pVal">—</div>
+        <div class="ctrl-row"><button class="pm" id="pMinus" aria-label="Цена −10">−</button>
+          <input type="range" id="pRange" aria-label="Цена 1 м²"><button class="pm" id="pPlus" aria-label="Цена +10">+</button></div>
+        <div class="ctrl-sub tnum" id="pSub"></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-head"><div><b>Темп продаж</b><small>м²/кв.</small></div></div>
+        <div class="ctrl-val tnum" id="vVal">—</div>
+        <div class="ctrl-row"><button class="pm" id="vMinus" aria-label="Темп −100">−</button>
+          <input type="range" id="vRange" aria-label="Темп продаж"><button class="pm" id="vPlus" aria-label="Темп +100">+</button></div>
+        <div class="ctrl-sub tnum" id="vSub"></div>
+      </div>
+    </div>
+    <div class="card kpi"><div class="l">Финансовый<br>результат<small>млрд. руб.</small></div>
+      <div class="v tnum"><span id="fr">—</span><span class="d" id="frD"></span></div></div>
+    <div class="card kpi"><div class="l">LLCR</div><div class="v tnum"><span id="llcr">—</span><span class="d" id="llcrD"></span></div></div>
+
+    <div class="proj-h">Проекты</div>
+    <div class="chips" id="chips"></div>
+    <div class="assist"><button class="btn ghost" data-soon>Виртуальный помощник ⚇</button><button data-soon aria-label="Уведомления">🔔</button></div>
+
+    <div class="src">
+      <strong>Источник данных</strong>
+      <div id="srcName">Модель 09_09_26 (значения из файла, встроены)</div>
+      <div class="row"><code>Dashboard_2!G69</code><code>Dashboard_2!E81</code><code>Продажи!U12→</code><code>Продажи!U15→</code></div>
+      <div id="srcWarn" class="warn" hidden></div>
+      <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
+      <button class="btn ghost" id="loadBtn">Загрузить другую модель .xlsx</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-title">СОКОЛЬНИКИ 09 09 NEW FM В РЫНКЕ</div>
+    <div class="bar">
+      <div class="seg" id="tabs"><button data-tab="market">Рынок</button><button data-tab="comp" class="on">Конкуренты</button></div>
+      <div class="queues" id="queues">Очередь:
+        <button data-q="1" class="on">1</button><button data-q="2">2</button><button data-q="3">3</button><button data-q="all">Весь проект</button></div>
+    </div>
+    <div class="charts" id="charts"></div>
+    <div class="bnav">
+      <div><button id="first" aria-label="В начало">|‹</button><button id="prev">‹ &nbsp;Предыдущий квартал</button></div>
+      <div><button id="next">Следующий квартал &nbsp;›</button><button id="last" aria-label="В конец">›|</button></div>
+    </div>
+    <div class="proto-note">Конкуренты — демо-данные (в модели их нет). ФР и LLCR после изменения ползунков — оценка прототипа, не пересчёт модели.</div>
+  </main>
+</section>
+
+<div id="tip" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+const MODEL = {"labels": ["1кв. 26", "2кв. 26", "3кв. 26", "4кв. 26", "1кв. 27", "2кв. 27", "3кв. 27", "4кв. 27", "1кв. 28", "2кв. 28", "3кв. 28", "4кв. 28", "1кв. 29", "2кв. 29", "3кв. 29", "4кв. 29", "1кв. 30", "2кв. 30", "3кв. 30", "4кв. 30", "1кв. 31", "2кв. 31", "3кв. 31", "4кв. 31", "1кв. 32", "2кв. 32", "3кв. 32", "4кв. 32", "1кв. 33"], "cols": ["U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW"], "q": {"1": {"price": [497.7, 547.79, 572.69, 586.05, 606.79, 621.96, 637.51, 653.45, 673.05, 693.24, 714.04, 735.46, 757.52, 780.25, 803.66, 815.71, 827.95, 836.23, 840.41, 844.61, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "area": [9314.2, 2888.2, 1900, 2400, 1970.7, 2589.7, 2589.7, 2589.7, 2589.7, 2589.7, 2589.7, 2589.7, 2589.7, 2589.7, 2402.8, 2402.8, 2402.8, 1721.2, 1500, 1185.9, 0, 0, 0, 0, 0, 0, 0, 0, 0], "total": 53395.77}, "2": {"price": [0.0, 0.0, 0.0, 0.0, 0.0, 572.37, 586.68, 601.35, 619.39, 637.97, 657.11, 676.82, 697.13, 718.04, 739.58, 761.77, 784.62, 808.16, 832.41, 857.38, 883.1, 896.35, 909.79, 918.89, 923.48, 928.1, 932.74, 937.4, 0.0], "area": [0, 0, 0, 0, 0, 2045.6, 2707.5, 3369.3, 3609.9, 2707.5, 2707.5, 2707.5, 2707.5, 2707.5, 2707.5, 2707.5, 2707.5, 3008.3, 3008.3, 3008.3, 3008.3, 3008.3, 2406.6, 2406.6, 2406.6, 2406.6, 1203.3, 902.5, 0], "total": 60165.79}, "3": {"price": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 611.77, 630.12, 649.03, 668.5, 688.55, 709.21, 730.49, 752.4, 774.97, 798.22, 822.17, 846.83, 872.24, 885.32, 898.6, 907.59, 912.13, 916.69, 921.27], "area": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 900.0, 1439.9, 1679.9, 1799.9, 1499.9, 1799.9, 1799.9, 1799.9, 1799.9, 1799.9, 1799.9, 1799.9, 1799.9, 1499.9, 1499.9, 1499.9, 1499.9, 1499.9, 780.0], "total": 29998.77}}, "fr": 18575830371.55899, "llcr": 1.199104746694882};
+
+/* ---------- утилиты ---------- */
+const $ = s => document.querySelector(s);
+const ROMAN = {1:'I',2:'II',3:'III',4:'IV'};
+const qLabel = s => { const m = String(s).match(/(\d)\s*кв\.?\s*(\d{2,4})/i); return m ? `${ROMAN[m[1]]} кв. ${m[2].slice(-2)}` : String(s); };
+const fmtArea = v => Math.round(v).toLocaleString('ru-RU').replace(/ /g,' ');
+const fmtPace = v => v == null ? '' : (v < 0.1 ? v.toFixed(2) : v.toFixed(1));
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+document.addEventListener('click', e => { if (e.target.closest('[data-soon]')) toast('Вне первой итерации'); });
+
+/* ---------- конкуренты (демо) ---------- */
+// значения III кв.26 – II кв.27 сняты со скриншота; дальше — экстраполяция
+const COMP_BASE = [
+  {id:'intel', name:'Интеллигент', color:'#c2410c', price:[545,555,578,590], pace:[0.3,1.4,1.1,1.3]},
+  {id:'dom56', name:'Дом 56', color:'#c98bf0', price:[716,752,775,806], pace:[0.5,1.4,1.1,1.3]},
+  {id:'sokolniki', name:'Sokolniki', color:'#3431f2', price:[530,545,560,575], pace:[1.0,3.0,2.4,2.4]},
+  {id:'level', name:'Level Бауманская', color:'#f0506e', price:[600,615,null,null], pace:[0.3,0.4,null,null]},
+  {id:'preo', name:'Преображенская площадь', color:'#f5c518', price:[580,610,640,680], pace:[0.15,5.6,5.0,4.9]},
+  {id:'stone', name:'STONE Rise', color:'#4fd6d0', price:[575,590,600,610], pace:[0.5,2.7,2.4,2.6]},
+  {id:'solos', name:'Solos', color:'#d12bc9', price:[445,445,440,431], pace:[0.1,1.6,1.0,1.1]},
+  {id:'sokolinn', name:'Sokolinn Park', color:'#22c55e', price:[552,562,570,570], pace:[0.04,0.5,0.4,0.4]},
+  {id:'ahead', name:'AHEAD', color:'#9aa3b5', price:[690,700,720,745], pace:[0.8,1.2,1.5,1.6], off:true},
+];
+const CHIP_ORDER = ['intel','dom56','sokolniki','level','preo','stone','solos','sokolinn','ahead'];
+let COMP = [];
+function buildCompetitors(labels){
+  const anchor = labels.findIndex(l => /3\s*кв\.?\s*26/.test(l));
+  const a = anchor < 0 ? 0 : anchor;
+  COMP = COMP_BASE.map((c,ci) => {
+    const price = labels.map(()=>null), pace = labels.map(()=>null);
+    for (let i = 0; i < labels.length; i++){
+      const k = i - a;
+      if (k >= 0 && k < 4){ price[i]=c.price[k]; pace[i]=c.pace[k]; }
+      else if (k < 0 && k >= -2){ price[i]=Math.round(c.price[0]/Math.pow(1.02,-k)); pace[i]=c.pace[0]; }
+      else if (k >= 4 && k < 12 && c.price[3] != null){
+        price[i]=Math.round(c.price[3]*Math.pow(1.022,k-3));
+        pace[i]=+(c.pace[3]*(1+0.06*Math.sin(k+ci))*Math.pow(0.97,k-3)).toFixed(2);
+      }
+    }
+    return {...c, price, pace, on: !c.off};
+  });
+}
+
+/* ---------- состояние ---------- */
+const S = { data:null, cur:{}, q:'1', start:0, tab:'comp' };
+function loadData(d){
+  S.data = d;
+  S.cur = {};
+  for (const q of Object.keys(d.q)) S.cur[q] = { price:[...d.q[q].price], area:[...d.q[q].area] };
+  const now = new Date(), cq = Math.floor(now.getMonth()/3)+1, cy = String(now.getFullYear()).slice(-2);
+  let idx = d.labels.findIndex(l => new RegExp(`^\\s*${cq}\\s*кв\\.?\\s*${cy}`).test(l));
+  S.start = Math.max(0, Math.min(idx < 0 ? 0 : idx, d.labels.length-4));
+  buildCompetitors(d.labels);
+  // кнопки очередей по фактическим данным
+  const qs = Object.keys(d.q).sort();
+  $('#queues').innerHTML = 'Очередь: ' + qs.map(q=>`<button data-q="${q}">${q}</button>`).join('') + '<button data-q="all">Весь проект</button>';
+  if (!qs.includes(S.q) && S.q!=='all') S.q = qs[0];
+  document.querySelectorAll('#queues [data-q]').forEach(x=>x.classList.toggle('on', x.dataset.q===S.q));
+  renderChips(); render();
+}
+
+/* наши ряды для выбранной очереди / всего проекта */
+function ourSeries(q, useBase){
+  const src = k => useBase ? S.data.q[k] : S.cur[k];
+  const n = S.data.labels.length;
+  if (q !== 'all'){
+    const s = src(q);
+    return { price: s.price.map(v=>v>0?v:null), pace: s.area.map(v=>v>0?v/1000:null) };
+  }
+  const price=[], pace=[];
+  for (let i=0;i<n;i++){
+    let a=0, pa=0, ps=[];
+    for (const k of Object.keys(S.data.q)){ const s=src(k); if (s.area[i]>0){ a+=s.area[i]; pa+=s.area[i]*s.price[i]; } if (s.price[i]>0) ps.push(s.price[i]); }
+    price.push(a>0 ? pa/a : (ps.length ? ps.reduce((x,y)=>x+y,0)/ps.length : null));
+    pace.push(a>0 ? a/1000 : null);
+  }
+  return {price, pace};
+}
+
+/* ---------- ползунки ---------- */
+const P_STEP = 10, V_STEP = 100;
+function sliderCtx(){
+  if (S.q === 'all') return null;
+  const base = S.data.q[S.q], cur = S.cur[S.q];
+  let i = S.start; // якорь — первый видимый квартал, где очередь в продаже
+  for (let k=0;k<4;k++){ const j=S.start+k; if (base.price[j]>0 && base.area[j]>0){ i=j; break; } }
+  if (!(base.price[i] > 0)) return {i, off:true};
+  const sold = cur.area.slice(0,i).reduce((x,y)=>x+y,0);
+  const pMin = Math.floor(base.price[i]*0.7/10)*10, pMax = Math.ceil(base.price[i]*1.3/10)*10;
+  const vMax = Math.max(0, Math.floor((base.total - sold)/100)*100);
+  return {i, pMin, pMax, vMin:0, vMax: Math.min(vMax, Math.max(5000, Math.ceil(base.area[i]*2.5/100)*100)), price:cur.price[i], area:cur.area[i]};
+}
+function setPrice(v){
+  const c = sliderCtx(); if (!c || c.off) return;
+  v = Math.max(c.pMin, Math.min(c.pMax, v));
+  const cur = S.cur[S.q], ratio = v / cur.price[c.i];
+  for (let t=c.i; t<cur.price.length; t++) if (cur.price[t]>0) cur.price[t] *= ratio; // сдвиг всей кривой индексации
+  render();
+}
+function setArea(v){
+  const c = sliderCtx(); if (!c || c.off) return;
+  const base = S.data.q[S.q], cur = S.cur[S.q];
+  const before = cur.area.slice(0,c.i).reduce((x,y)=>x+y,0);
+  v = Math.max(0, Math.min(v, base.total - before));
+  const tail = cur.area.slice(c.i+1), tailSum = tail.reduce((x,y)=>x+y,0);
+  const need = base.total - before - v;
+  cur.area[c.i] = v;
+  if (tailSum > 0){ const k = need/tailSum; for (let t=c.i+1;t<cur.area.length;t++) cur.area[t] *= k; }
+  else if (need > 0 && c.i+1 < cur.area.length){ cur.area[c.i+1] = need; if (!(cur.price[c.i+1]>0)) cur.price[c.i+1] = cur.price[c.i]*1.02; }
+  render();
+}
+function paintRange(el){ const p = (el.value-el.min)/((el.max-el.min)||1)*100; el.style.setProperty('--p', p+'%'); }
+function renderSliders(){
+  const c = sliderCtx(), pR=$('#pRange'), vR=$('#vRange');
+  const lbl = qLabel(S.data.labels[c && !c.off ? c.i : S.start]);
+  const dis = !c || c.off;
+  [pR,vR,$('#pMinus'),$('#pPlus'),$('#vMinus'),$('#vPlus')].forEach(e=>e.disabled=dis);
+  if (!c){ // весь проект
+    const s = ourSeries('all'); const i=S.start;
+    $('#pVal').textContent = s.price[i] ? Math.round(s.price[i]) : '—';
+    $('#vVal').textContent = s.pace[i] ? fmtArea(s.pace[i]*1000) : '—';
+    $('#pSub').textContent = `${lbl} · средневзв. по очередям`; $('#vSub').textContent = 'Меняется в разрезе очереди';
+    return;
+  }
+  if (c.off){
+    $('#pVal').textContent='—'; $('#vVal').textContent='—';
+    $('#pSub').textContent=`${lbl} · очередь ${S.q} не в продаже`; $('#vSub').textContent='';
+    return;
+  }
+  Object.assign(pR,{min:c.pMin,max:c.pMax,step:P_STEP}); pR.value = Math.round(c.price/10)*10;
+  Object.assign(vR,{min:c.vMin,max:c.vMax,step:V_STEP}); vR.value = Math.round(c.area/100)*100;
+  paintRange(pR); paintRange(vR);
+  $('#pVal').textContent = Math.round(c.price);
+  $('#vVal').textContent = fmtArea(c.area);
+  const col = S.data.cols?.[c.i];
+  $('#pSub').textContent = `${lbl}${col?` · Продажи!${col}${rowOf('price')}`:''}`;
+  $('#vSub').textContent = `${lbl}${col?` · Продажи!${col}${rowOf('area')}`:''}`;
+}
+function rowOf(kind){ const r = S.data.rows?.[S.q]; return r ? r[kind] : ''; }
+
+$('#pRange').addEventListener('input', e=>setPrice(+e.target.value));
+$('#vRange').addEventListener('input', e=>setArea(+e.target.value));
+const ai = ()=>sliderCtx().i;
+$('#pMinus').onclick=()=>setPrice(Math.round(S.cur[S.q].price[ai()])-P_STEP);
+$('#pPlus').onclick =()=>setPrice(Math.round(S.cur[S.q].price[ai()])+P_STEP);
+$('#vMinus').onclick=()=>setArea(Math.round(S.cur[S.q].area[ai()]/100)*100-V_STEP);
+$('#vPlus').onclick =()=>setArea(Math.round(S.cur[S.q].area[ai()]/100)*100+V_STEP);
+$('#reset').onclick=()=>{ for (const q of Object.keys(S.data.q)) S.cur[q]={price:[...S.data.q[q].price],area:[...S.data.q[q].area]}; render(); toast('Значения модели восстановлены'); };
+
+/* ---------- ФР и LLCR ---------- */
+// Прототип: модель не пересчитывается в браузере. Оценка: ΔФР ≈ 0,78·Δвыручки + эффект сдвига денег во времени (1,65%/кв. — ставка ПФ 6,6% год.);
+// ΔLLCR ≈ 0,9·Δвыручки / объём ПФ (79,1 млрд, Dashboard_2!E74). В боевой версии — пересчёт исходной модели (см. ТЗ).
+const PF_DEBT = 79.108; // млрд
+function estimate(){
+  let dRev = 0, fin = 0;
+  const n = S.data.labels.length;
+  for (const q of Object.keys(S.data.q)){
+    const b=S.data.q[q], c=S.cur[q]; let cum=0;
+    for (let t=0;t<n;t++){
+      const d = (c.price[t]*c.area[t] - b.price[t]*b.area[t]) / 1e6; // тыс.руб → млрд
+      dRev += d; cum += d; fin += cum*0.0165;
+    }
+  }
+  const dFR = 0.78*dRev + fin;
+  const fr = S.data.fr/1e9 + dFR, llcr = S.data.llcr + 0.9*dRev/PF_DEBT + 0.3*fin/PF_DEBT;
+  return {fr, llcr, dFR, dL: llcr - S.data.llcr, changed: Math.abs(dRev)>1e-9 || Math.abs(fin)>1e-9};
+}
+function renderKPI(){
+  const e = estimate();
+  $('#fr').textContent = e.fr.toFixed(1);
+  $('#llcr').textContent = e.llcr.toFixed(2);
+  const d = (el,v,dig)=>{ el.className='d'+(Math.abs(v)<Math.pow(10,-dig)/2?'':v>0?' up':' down'); el.textContent = e.changed ? `≈ ${v>0?'+':''}${v.toFixed(dig)} к модели` : 'значение модели'; };
+  d($('#frD'), e.dFR, 1); d($('#llcrD'), e.dL, 2);
+}
+
+/* ---------- чипы ---------- */
+function renderChips(){
+  const box = $('#chips'); box.innerHTML = '';
+  const ours = document.createElement('span'); ours.className='chip ours'; ours.style.setProperty('--c','#f4f5f7'); ours.textContent='Сокольники 09 09 new FM';
+  box.append(ours);
+  const br = document.createElement('div'); br.style.flexBasis='100%'; box.append(br);
+  for (const id of CHIP_ORDER){
+    const c = COMP.find(x=>x.id===id);
+    const b = document.createElement('button');
+    b.className = 'chip'+(c.on?'':' off'); b.style.setProperty('--c', c.color);
+    b.innerHTML = `<span aria-hidden="true">${c.on?'−':'+'}</span>${c.name}`;
+    b.setAttribute('aria-pressed', c.on);
+    b.title = c.on ? 'Убрать с графиков' : 'Показать на графиках';
+    b.onclick = ()=>{ c.on=!c.on; renderChips(); renderCharts(); };
+    box.append(b);
+  }
+}
+
+/* ---------- графики ---------- */
+const W = 1360, GW = W/4;
+const tip = $('#tip');
+function barsFor(i, key){
+  const ours = ourSeries(S.q)[key][i], base = ourSeries(S.q,true)[key][i];
+  const arr = COMP.filter(c=>c.on && c[key][i]!=null).map(c=>({name:c.name,color:c.color,v:c[key][i]}));
+  if (ours != null) arr.push({name:'Сокольники 09 09 new FM', color:'var(--ours)', v:ours, ours:true, base});
+  return arr.sort((a,b)=>a.v-b.v);
+}
+function chartSVG(key, H, fmt){
+  const idx = [0,1,2,3].map(k=>S.start+k).filter(i=>i<S.data.labels.length);
+  let max = 0;
+  idx.forEach(i=>barsFor(i,key).forEach(b=>{ max=Math.max(max,b.v,b.base||0); }));
+  const top = 60, bottom = H-34, hMax = bottom-top-10;
+  const y = v => bottom - (max>0 ? v/max*hMax : 0);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${key==='price'?'Цена 1 м²':'Темп продаж'} по кварталам">`;
+  idx.forEach((i,g)=>{
+    const x0 = g*GW, bars = barsFor(i,key);
+    s += `<text x="${x0+GW/2}" y="24" fill="#dfe3e8" font-size="15" text-anchor="middle" font-family="Manrope,sans-serif">${qLabel(S.data.labels[i])}</text>`;
+    if (!bars.length){ s += `<text x="${x0+GW/2}" y="${bottom-20}" fill="#6c737d" font-size="13" text-anchor="middle">нет данных</text>`; return; }
+    const slot = Math.min(35, (GW-60)/bars.length), bw = Math.max(8, slot*0.62);
+    const startX = x0 + (GW - slot*bars.length)/2;
+    const labelIdx = new Set([0, bars.length-1, bars.findIndex(b=>b.ours)].filter(k=>k>=0));
+    bars.forEach((b,k)=>{
+      const bx = startX + k*slot + (slot-bw)/2, yt = y(b.v);
+      const hgt = bottom - yt, seg = 22, gap = 3;
+      s += `<g class="bar" data-n="${b.name}" data-v="${fmt(b.v)}" data-b="${b.ours && b.base!=null && Math.abs(b.base-b.v)>1e-6 ? fmt(b.base):''}">`;
+      s += `<rect x="${bx-2}" y="${top-40}" width="${bw+4}" height="${bottom-top+40}" fill="transparent"/>`;
+      for (let h=0; h<hgt-0.5; h+=seg+gap){
+        const sh = Math.min(seg, hgt-h);
+        s += `<rect x="${bx}" y="${bottom-h-sh}" width="${bw}" height="${sh}" fill="${b.color}"/>`;
+      }
+      if (b.ours && b.base!=null && Math.abs(b.base-b.v)>1e-6){
+        const yb = y(b.base);
+        s += `<line x1="${bx-5}" x2="${bx+bw+5}" y1="${yb}" y2="${yb}" stroke="#ececec" stroke-width="2" stroke-dasharray="4 3"/>`;
+      }
+      s += `</g>`;
+      if (labelIdx.has(k)) s += `<text x="${bx+bw/2}" y="${bottom+20}" fill="${b.ours?'#fff':'#c9ced5'}" font-size="14" font-weight="${b.ours?700:500}" text-anchor="middle" font-family="Manrope,sans-serif">${fmt(b.v)}</text>`;
+    });
+  });
+  return s + `</svg>`;
+}
+function renderCharts(){
+  const box = $('#charts');
+  if (S.tab === 'market'){ box.innerHTML = `<div class="empty">Вкладка «Рынок» — во второй итерации.<br>Сейчас реализован срез «Конкуренты».</div>`; return; }
+  box.innerHTML = `<div class="charts-inner">
+    <div class="ylab">Цена 1 м², тыс.руб.</div><div>${chartSVG('price', 420, v=>Math.round(v))}</div>
+    <div class="ylab">Темп продаж, тыс.м²</div><div>${chartSVG('pace', 360, fmtPace)}</div></div>`;
+  box.querySelectorAll('.bar').forEach(g=>{
+    g.addEventListener('mousemove', e=>{
+      tip.hidden=false; tip.innerHTML = `<b>${g.dataset.n}</b><br>${g.dataset.v}${g.dataset.b?` <span style="color:#9aa1ab">(в модели ${g.dataset.b})</span>`:''}`;
+      tip.style.left = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8)+'px'; tip.style.top = (e.clientY+14)+'px';
+    });
+    g.addEventListener('mouseleave', ()=>tip.hidden=true);
+  });
+  const n = S.data.labels.length;
+  $('#first').disabled = $('#prev').disabled = S.start<=0;
+  $('#next').disabled = $('#last').disabled = S.start>=n-4;
+}
+function render(){ renderSliders(); renderKPI(); renderCharts(); }
+
+$('#prev').onclick=()=>{ S.start=Math.max(0,S.start-1); render(); };
+$('#next').onclick=()=>{ S.start=Math.min(S.data.labels.length-4,S.start+1); render(); };
+$('#first').onclick=()=>{ S.start=0; render(); };
+$('#last').onclick=()=>{ S.start=Math.max(0,S.data.labels.length-4); render(); };
+$('#queues').addEventListener('click', e=>{ const b=e.target.closest('[data-q]'); if(!b) return; S.q=b.dataset.q;
+  document.querySelectorAll('#queues [data-q]').forEach(x=>x.classList.toggle('on', x===b)); render(); });
+$('#tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; S.tab=b.dataset.tab;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on', x===b)); renderCharts(); });
+
+/* ---------- загрузка xlsx ---------- */
+$('#loadBtn').onclick = ()=>$('#file').click();
+$('#file').addEventListener('change', async e=>{
+  const f = e.target.files[0]; if (!f) return;
+  const warn = $('#srcWarn'); warn.hidden = true;
+  $('#srcName').textContent = `Читаю ${f.name}…`;
+  await new Promise(r=>setTimeout(r,30));
+  try{
+    const wb = XLSX.read(await f.arrayBuffer(), {type:'array', sheets:['Dashboard_2','Продажи'], cellFormula:false, cellHTML:false, cellStyles:false});
+    const d = parseWorkbook(wb);
+    loadData(d);
+    $('#srcName').textContent = `${f.name} · периодов: ${d.labels.length}`;
+    if (d.warnings.length){ warn.hidden=false; warn.textContent = d.warnings.join(' '); }
+    toast('Модель загружена');
+  }catch(err){
+    $('#srcName').textContent = 'Файл не прочитан';
+    warn.hidden=false; warn.textContent = err.message;
+  }
+  e.target.value='';
+});
+function parseWorkbook(wb){
+  const D = wb.Sheets['Dashboard_2'], P = wb.Sheets['Продажи'];
+  if (!D || !P) throw new Error('В файле нет листа Dashboard_2 или Продажи.');
+  const warnings = [];
+  const v = (ws,a)=>ws[a]?.v;
+  const fr = +v(D,'G69'), llcr = +v(D,'E81');
+  if (!isFinite(fr)) warnings.push('Dashboard_2!G69 пустая.');
+  if (!isFinite(llcr)) warnings.push('Dashboard_2!E81 пустая.');
+  const enc = (r,c)=>XLSX.utils.encode_cell({r,c});
+  // строки очередей: C = номер очереди, D = параметр, E = «Квартиры»
+  const rows = {};
+  const range = XLSX.utils.decode_range(P['!ref']);
+  for (let r=0; r<=Math.min(range.e.r,600); r++){
+    const q=v(P,enc(r,2)), p=String(v(P,enc(r,3))||'').trim(), t=String(v(P,enc(r,4))||'').trim();
+    if (!(q>=1) || t!=='Квартиры') continue;
+    rows[q] = rows[q]||{};
+    if (p==='Цена продажи с индексацией') rows[q].price = r;
+    if (p==='Продано') rows[q].area = r;
+  }
+  if (!rows[1] || rows[1].price!==11 || rows[1].area!==14) warnings.push('Очередь 1 найдена не в U12/U15 — проверьте структуру листа.');
+  // периоды: строка 2, начиная с U
+  const c0 = 20, labels=[], cols=[];
+  for (let c=c0; c<c0+200; c++){ const l=v(P,enc(1,c)); if (!l) break; labels.push(String(l)); cols.push(XLSX.utils.encode_col(c)); }
+  const q = {}, outRows = {};
+  for (const [k,r] of Object.entries(rows)){
+    if (r.price==null || r.area==null) continue;
+    const price = labels.map((_,i)=>(+v(P,enc(r.price,c0+i))||0)/1000);
+    const area = labels.map((_,i)=>+v(P,enc(r.area,c0+i))||0);
+    if (!area.some(x=>x>0)) continue;
+    q[k] = {price, area, total: area.reduce((x,y)=>x+y,0)};
+    outRows[k] = {price:r.price+1, area:r.area+1};
+  }
+  if (!Object.keys(q).length) throw new Error('Не нашла рядов цены и продаж по квартирам на листе «Продажи».');
+  // обрезаем хвост без продаж
+  let last = 0; Object.values(q).forEach(s=>s.area.forEach((a,i)=>{ if(a>0) last=Math.max(last,i); }));
+  const n = last+1;
+  Object.values(q).forEach(s=>{ s.price=s.price.slice(0,n); s.area=s.area.slice(0,n); });
+  return {labels:labels.slice(0,n), cols:cols.slice(0,n), q, rows:outRows, fr: isFinite(fr)?fr:0, llcr: isFinite(llcr)?llcr:0, warnings};
+}
+
+/* ---------- навигация экранов ---------- */
+function show(id){ ['login','monitor','dash'].forEach(s=>$('#'+s).hidden = s!==id); scrollTo(0,0); }
+const doLogin = ()=>{ if(!$('#lg').value.trim()){ toast('Введите логин'); return;} show('monitor'); };
+$('#loginBtn').addEventListener('click', doLogin);
+$('#loginForm').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); doLogin(); } });
+$('#logout1').onclick=()=>show('login');
+$('#back').onclick=()=>show('monitor');
+
+const NODES = [
+  {n:'Сокольники 09 09 new FM', cls:'ours', a:0, go:true},
+  {n:'Павелецкий', cls:'grey', a:40},
+  {n:'Рязанский', a:80}, {n:'Рижский', a:130}, {n:'Курский', a:160},
+  {n:'Савеловский', a:200}, {n:'Киевский', a:230},
+  {n:'Сокольники', cls:'partner2', a:280, tag:'в партнерстве'},
+  {n:'Белорусский', cls:'partner1', a:320, tag:'в партнерстве'},
+];
+(function buildOrbit(){
+  const o = $('#orbit');
+  NODES.forEach(nd=>{
+    const r = 38, rad = (nd.a-90)*Math.PI/180;
+    const el = document.createElement('div'); el.className='node'+(nd.go||nd.tag?' active':'');
+    el.style.left = (50 + r*Math.cos(rad))+'%'; el.style.top = (50 + r*Math.sin(rad))+'%';
+    el.innerHTML = `<button><span class="ball ${nd.cls||''}"></span><span class="nm">${nd.n}</span></button>${nd.tag?`<span class="tag">${nd.tag}</span>`:''}`;
+    el.querySelector('button').onclick = ()=> nd.go ? show('dash') : toast(`«${nd.n}» — нет данных в прототипе`);
+    o.append(el);
+  });
+})();
+
+loadData({...MODEL, rows:{1:{price:12,area:15},2:{price:58,area:61},3:{price:104,area:107}}, warnings:[]});
+</script>
